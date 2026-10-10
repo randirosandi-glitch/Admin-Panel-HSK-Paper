@@ -96,7 +96,7 @@ async function refreshCatalog(){
  const beta=state.repoTrees.has(REPOS[0]),stable=state.repoTrees.has(REPOS[1]);
  status('catalogStatus','Katalog dimuat: '+state.catalog.size+' paket · '+(beta?'Beta OK':'Beta gagal dibaca')+' · '+(stable?'Stable OK':'Stable gagal dibaca')+'.','ok');
  renderPackages();renderAudioPackageOptions();$('refreshBtn').disabled=false;
- await refreshAudioIndex(false);
+ await refreshAudioIndex(true);
 }
 function renderLevelButtons(){
  out('levelGrid',Array.from({length:6},(_,i)=>{const n=i+1;return '<button type="button" class="level '+(state.activeLevel===n?'active':'')+'" data-level="'+n+'"><strong>📁 HSK '+n+'</strong><small>'+[...state.catalog.values()].filter(f=>f.folder==='HSK '+n).length+' paket</small></button>'}).join(''));
@@ -124,7 +124,7 @@ async function refreshAudioIndex(showMessage=true){
  catch(e){state.audioIndexError=e.message;renderPackages();if(showMessage)status('audioStatus',e.message+' Status audio ditampilkan sebagai belum terverifikasi, bukan dianggap kosong.','err')}
 }
 function fillFolders(){const s=$('jsonFolder');s.innerHTML=levelFolders.map(f=>'<option value="'+esc(f)+'">'+esc(f)+'</option>').join('')}
-function selectPackage(code){state.selectedCode=code;$('audioPackage').value=code;$('manualCode').value='';renderPackages();status('mp3Status','Paket dipilih: '+code+'. Pilih MP3 atau tempel tautan Drive.')}
+function selectPackage(code){state.selectedCode=code;const lv=codeLevel(code);if(lv){$('audioLevel').value=String(lv);renderAudioPackageOptions()}$('audioPackage').value=code;$('manualCode').value='';renderPackages();status('mp3Status','Paket dipilih: '+code+'. Pilih MP3 atau tempel tautan Drive.')}
 function codeForAudio(){const manual=$('manualCode').value.trim().toUpperCase();return manual||$('audioPackage').value||state.selectedCode}
 function validateJsonFile(file,folder,text,data){
  if(file.size>2*1024*1024)throw new Error(file.name+': file melebihi 2 MB.');
@@ -174,7 +174,7 @@ async function uploadJson(){
 function validateAudio(){
  state.audioValid=false;$('uploadAudioBtn').disabled=true;
  const level=Number($('audioLevel').value),code=codeForAudio(),files=[...$('mp3Files').files],url=$('driveUrl').value.trim();
- if(!/^H[1-6]\d{4}$/.test(code)||codeLevel(code)!==level){status('mp3Status','Kode paket wajib sesuai level HSK '+level+', misalnya H'+level+'1001.','err');return}
+ if((url||files.length===1||files.length===0)&&(!/^H[1-6]\d{4}$/.test(code)||codeLevel(code)!==level)){status('mp3Status','Kode paket wajib sesuai level HSK '+level+', misalnya H'+level+'1001.','err');return}
  if(files.length&&url){status('mp3Status','Pilih file MP3 atau tautan Drive, bukan keduanya sekaligus.','err');return}
  if(!files.length&&!url){status('mp3Status','Pilih file MP3 atau tempel tautan file Google Drive.','err');return}
  if(url&&!extractDriveId(url)){status('mp3Status','Tautan Google Drive tidak dikenali. Gunakan tautan file, bukan tautan folder.','err');return}
