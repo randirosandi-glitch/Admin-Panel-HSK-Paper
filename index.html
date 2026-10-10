@@ -81,7 +81,7 @@ async function scanRepo(repo){
  const info=await api('https://api.github.com/repos/'+repo+'/git/trees/main?recursive=1');
  if(!Array.isArray(info.tree))throw new Error('Respons pohon repo tidak valid: '+repo);
  const found=[],codes=new Set();let flat=false,nested=false;
- for(const item of info.tree){if(item.type!=='blob'||!String(item.path).toLowerCase().endsWith('.json'))continue;const n=normalizePath(item.path);if(!n)continue;const code=n.file.replace(/\.json$/i,'');if(/^(manifest|reading-passages)$/i.test(code))continue;if(!/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(code))continue;const folderLevel=codeLevel(code);if(n.folder.startsWith('HSK ')){if(folderLevel&&folderLevel!==Number(n.folder.slice(4)))continue;if(!folderLevel)continue}else if(!n.folder.startsWith('Workbook '))continue;if(codes.has(n.folder+'|'+code))continue;codes.add(n.folder+'|'+code);found.push({code,folder:n.folder,path:item.path,repo:repo,sha:item.sha||'',size:item.size||0,nested:n.nested});if(n.nested)nested=true;else flat=true;}
+ for(const item of info.tree){if(item.type!=='blob'||Number(item.size||0)<=0||!String(item.path).toLowerCase().endsWith('.json'))continue;const n=normalizePath(item.path);if(!n)continue;const code=n.file.replace(/\.json$/i,'');if(/^(manifest|reading-passages)$/i.test(code))continue;if(!/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(code))continue;const folderLevel=codeLevel(code);if(n.folder.startsWith('HSK ')){if(folderLevel&&folderLevel!==Number(n.folder.slice(4)))continue;if(!folderLevel)continue}else if(!n.folder.startsWith('Workbook '))continue;if(codes.has(n.folder+'|'+code))continue;codes.add(n.folder+'|'+code);found.push({code,folder:n.folder,path:item.path,repo:repo,sha:item.sha||'',size:item.size||0,nested:n.nested});if(n.nested)nested=true;else flat=true;}
  return {repo,files:found,flatMode:flat&&!nested,nestedMode:nested,treeSha:info.sha||'',truncated:!!info.truncated};
 }
 async function refreshCatalog(){
@@ -165,7 +165,7 @@ async function githubWrite(repo,path,content,existingSha){
 async function uploadJson(){
  if(!state.token){status('jsonStatus','Hubungkan GitHub terlebih dahulu.','err');return}
  if(!state.jsonValid){await validateJson();if(!state.jsonValid)return}
- const repo=$('targetRepo').value,items=state.validatedJson.slice();$('uploadJsonBtn').disabled=true;
+ const repo=$('targetRepo').value,items=state.validatedJson.slice();if(repo===REPOS[1]&&!window.confirm('Tujuan Stable adalah sumber live. Perubahan JSON dapat memengaruhi pengguna aplikasi. Lanjutkan upload ke Stable?'))return;$('uploadJsonBtn').disabled=true;
  let done=[];
  try{for(let i=0;i<items.length;i++){const item=items[i];status('jsonStatus','Upload '+(i+1)+'/'+items.length+': '+item.code+'…','info');const path=preferredPath(repo,item.folder,item.code);await githubWrite(repo,path,item.text);done.push(item.code)}
  status('jsonStatus','Berhasil menyimpan '+done.length+' file ke '+repo+': '+done.join(', ')+'. Memperbarui katalog…','ok');await refreshCatalog();state.jsonValid=false;state.validatedJson=[];$('jsonFiles').value='';
