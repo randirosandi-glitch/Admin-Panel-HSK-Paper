@@ -194,15 +194,17 @@ async function uploadAudio(){
  if(!state.audioValid){validateAudio();if(!state.audioValid)return}
  const key=$('driveKey').value.trim(),level=Number($('audioLevel').value),chosen=codeForAudio(),files=[...$('mp3Files').files],link=$('driveUrl').value.trim();
  $('uploadAudioBtn').disabled=true;let wanted=[];
+ const previousIds={};
+ const targetFolder='HSK '+level;
  try{
-  if(link){const id=extractDriveId(link);wanted=[chosen];status('mp3Status','Mengirim perintah untuk menghubungkan file Drive ke '+chosen+'…','info');await sendDrive({action:'attach',key:key,fileId:id,level:level,code:chosen});}
+  if(link){const id=extractDriveId(link);wanted=[chosen];previousIds[chosen]=state.audioFiles[chosen]?.id||'';status('mp3Status','Mengirim perintah untuk menghubungkan file Drive ke '+chosen+'…','info');await sendDrive({action:'attach',key:key,fileId:id,level:level,code:chosen});}
   else{
-   for(let i=0;i<files.length;i++){const f=files[i],code=files.length===1?chosen:f.name.replace(/\.mp3$/i,'').toUpperCase();wanted.push(code);status('mp3Status','Mengirim '+(i+1)+'/'+files.length+': '+f.name+'…','info');const b64=bytesToBase64(await f.arrayBuffer());await sendDrive({action:'upload',key:key,level:level,code:code,fileName:f.name,mimeType:'audio/mpeg',base64:b64})}
+   for(let i=0;i<files.length;i++){const f=files[i],code=files.length===1?chosen:f.name.replace(/\.mp3$/i,'').toUpperCase();wanted.push(code);previousIds[code]=state.audioFiles[code]?.id||'';status('mp3Status','Mengirim '+(i+1)+'/'+files.length+': '+f.name+'…','info');const b64=bytesToBase64(await f.arrayBuffer());await sendDrive({action:'upload',key:key,level:level,code:code,fileName:f.name,mimeType:'audio/mpeg',base64:b64})}
   }
   status('mp3Status','Permintaan terkirim. Menunggu Google Drive memperbarui indeks audio…','info');
-  let found=false;for(let attempt=0;attempt<8;attempt++){await sleep(1800);try{const d=await jsonp(DRIVE_INDEX_URL,9000);state.audioFiles=d.files||{};renderPackages();if(wanted.every(c=>state.audioFiles[c])){found=true;break}}catch(e){}}
-  if(found){status('mp3Status','Terverifikasi: audio tersedia di Google Drive untuk '+wanted.join(', ')+'.','ok');$('mp3Files').value='';$('driveUrl').value='';$('driveKey').value='';state.audioValid=false;renderAudioPackageOptions()}
-  else status('mp3Status','Permintaan telah dikirim, tetapi audio belum muncul di indeks setelah menunggu. Periksa: Apps Script sudah diperbarui/dideploy, ADMIN_UPLOAD_KEY cocok, izin Drive, lalu periksa status audio lagi.','err');
+  let found=false;for(let attempt=0;attempt<8;attempt++){await sleep(1800);try{const d=await jsonp(DRIVE_INDEX_URL,9000);state.audioFiles=d.files||{};renderPackages();const confirmed=wanted.every(code=>{const entry=state.audioFiles[code];if(!entry||entry.folder!==targetFolder)return false;if(link&&code===chosen&&entry.id!==extractDriveId(link))return false;if(!link&&previousIds[code]&&entry.id===previousIds[code])return false;if(entry.sharingAccess&&entry.sharingAccess!=='ANYONE_WITH_LINK'&&entry.sharingAccess!=='ANYONE')return false;return true});if(confirmed){found=true;break}}catch(e){}}
+  if(found){status('mp3Status','Terverifikasi: file baru/terhubung, folder dan status audio sesuai untuk '+wanted.join(', ')+'.','ok');$('mp3Files').value='';$('driveUrl').value='';$('driveKey').value='';state.audioValid=false;renderAudioPackageOptions()}
+  else status('mp3Status','Belum terverifikasi. Kode audio yang sudah ada tidak dianggap sukses dengan sendirinya. Periksa apakah Apps Script terbaru telah dideploy, ADMIN_UPLOAD_KEY cocok, izin Drive tersedia, lalu ulangi pemeriksaan audio.','err');
  }catch(e){status('mp3Status','Pengiriman gagal: '+e.message+'. Periksa koneksi, ukuran file, dan deployment Apps Script.','err')}
  finally{$('uploadAudioBtn').disabled=!state.audioValid}
 }
