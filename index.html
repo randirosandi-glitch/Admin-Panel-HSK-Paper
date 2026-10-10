@@ -1,56 +1,228 @@
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>HSK Papers — Admin Upload</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f7f9">
+<title>HSK Papers — Admin Panel</title>
 <style>
-:root{color-scheme:light dark;--bg:#f5f6f8;--panel:#fff;--text:#17191d;--muted:#68707d;--line:#e2e5e9;--accent:#f59e0b;--accentText:#241600;--good:#15803d;--bad:#b91c1c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body.dark{color-scheme:dark;--bg:#0b0c0e;--panel:#17191c;--text:#f4f5f6;--muted:#a1a6af;--line:#30343a;--accent:#fbbf24;--accentText:#211600;--good:#4ade80;--bad:#f87171}.wrap{width:min(900px,100%);margin:auto;padding:20px 16px 44px}.top{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:22px}.brand{display:flex;align-items:center;gap:10px}.mark{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:var(--accent);color:var(--accentText);font-weight:900}.brand h1{font-size:18px;margin:0}.brand p{font-size:12px;color:var(--muted);margin:2px 0 0}.btn,select,input,textarea{font:inherit}.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px 13px;border-radius:11px;cursor:pointer}.btn.primary{background:var(--accent);color:var(--accentText);border-color:var(--accent);font-weight:750}.hero{margin-bottom:18px}.hero h2{font-size:clamp(24px,5vw,32px);line-height:1.15;letter-spacing:-.04em;margin:0 0 8px}.hero p{color:var(--muted);margin:0}.notice{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin:16px 0 20px;font-size:13px;color:var(--muted)}.notice strong{color:var(--text)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;min-width:0}.card h3{font-size:17px;margin:0 0 4px}.sub{color:var(--muted);font-size:13px;margin:0 0 16px}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:13px;font-weight:700}.field input,.field select{width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:var(--bg);color:var(--text)}.filepick{display:block;border:1px dashed #9ba2ad;border-radius:12px;padding:17px;text-align:center;cursor:pointer}.filepick b{display:block}.filepick span{display:block;color:var(--muted);font-size:12px;margin-top:4px}.filepick input{display:none}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.result{margin-top:12px;font-size:13px;color:var(--muted);overflow-wrap:anywhere}.result .ok{color:var(--good)}.result .err{color:var(--bad)}.foot{color:var(--muted);font-size:12px;margin-top:20px}.folder-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}.folder-level{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel);color:var(--text);text-align:left;cursor:pointer}.folder-level.active{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,var(--panel))}.folder-level b{display:block;font-size:15px}.folder-level small{color:var(--muted)}.package-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}.package-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel);color:var(--text);text-align:left;cursor:pointer;min-width:0}.package-card.active{border-color:var(--accent)}.package-card b{display:block;overflow-wrap:anywhere}.package-card small{display:block;color:var(--muted);margin-top:4px}.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#9ca3af;margin-right:6px}.status-dot.yes{background:#16a34a}.status-dot.no{background:#d97706}.source-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.source-pill{border:1px solid var(--line);border-radius:999px;padding:5px 9px;font-size:12px;color:var(--muted)}.source-pill strong{color:var(--text)}.package-empty{padding:16px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:13px}@media(max-width:650px){.folder-levels{grid-template-columns:repeat(2,minmax(0,1fr))}.package-list{grid-template-columns:1fr}}@media(max-width:650px){.wrap{padding:14px 12px 32px}.grid{grid-template-columns:1fr}.card{padding:15px}.top{align-items:flex-start}.hero h2{font-size:27px}}
-</style></head>
-<body><div class="wrap">
-<header class="top"><div class="brand"><div class="mark">文</div><div><h1>HSK Papers</h1><p>Admin · Upload konten</p></div></div><button class="btn" id="theme" type="button">Ganti tema</button></header>
-<section class="hero"><h2>Upload soal dan audio.</h2><p>JSON masuk ke folder level HSK; MP3 dihubungkan ke kode paket.</p></section>
-<div class="notice"><strong>Mode rancangan.</strong> File diperiksa di perangkat. Tombol upload akan aktif setelah koneksi penyimpanan dan akses admin dipasang. Saat ini tidak ada file yang dikirim ke server.</div>
-<div class="grid">
-<section class="card">
-<h3>JSON soal</h3><p class="sub">JSON diunggah ke folder level HSK. Kode paket tidak perlu dipilih lebih dahulu; paket baru akan muncul setelah datanya masuk ke repository dan katalog aplikasi membacanya.</p>
-<div class="field"><label>Folder tujuan</label></div><div id="jsonLevelFolders" class="folder-levels"></div>
-<div class="source-row"><span class="source-pill">Sumber tujuan: <strong>GitHub · belum terhubung</strong></span></div>
-<label class="filepick"><b>Pilih file JSON</b><span>Ekstensi .json · satu file per proses</span><input id="jsonFile" type="file" accept="application/json,.json"></label><div id="jsonResult" class="result" aria-live="polite">Pilih folder level dan file JSON.</div>
-<div class="actions"><button class="btn primary" id="addJson" type="button">Periksa JSON</button><button class="btn" id="uploadJson" type="button" disabled>Upload ke GitHub</button><button class="btn" id="clearJson" type="button">Bersihkan</button></div>
+:root{color-scheme:light;--bg:#f5f6f8;--panel:#fff;--text:#191b20;--muted:#68707d;--line:#e1e4e8;--accent:#f2aa27;--accentSoft:#fff1d8;--good:#13834a;--bad:#bd3535;--info:#4263a6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body.dark{color-scheme:dark;--bg:#0b0c0e;--panel:#17191c;--text:#f4f5f6;--muted:#a1a6af;--line:#30343a;--accent:#f6bb46;--accentSoft:#392b14;--good:#5ddb91;--bad:#ff8585;--info:#a8bdff}
+button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.48;cursor:not-allowed}.wrap{width:min(1040px,100%);margin:auto;padding:18px 14px 42px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:10px}.mark{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:var(--accent);color:#251b06;font-weight:900;font-size:23px}.brand h1{font-size:18px;margin:0}.brand p{font-size:12px;color:var(--muted);margin:1px 0 0}.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px 13px;border-radius:11px}.btn.primary{background:var(--accent);color:#251b06;border-color:var(--accent);font-weight:750}.btn.small{padding:7px 10px;font-size:13px}.hero{margin-bottom:16px}.hero h2{font-size:clamp(25px,5vw,34px);line-height:1.14;letter-spacing:-.04em;margin:0 0 8px}.hero p{color:var(--muted);margin:0}.notice{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin:14px 0 18px;font-size:13px;color:var(--muted)}.notice strong{color:var(--text)}.notice.warn{border-color:#e4b34c;background:var(--accentSoft)}.layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}.card.full{grid-column:1/-1}.card h3{font-size:17px;margin:0 0 3px}.sub{color:var(--muted);font-size:13px;margin:0 0 14px}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:13px;font-weight:750}.field input,.field select{width:100%;min-width:0;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:var(--bg);color:var(--text)}.field input[type=file]{padding:10px}.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.row>.grow{flex:1;min-width:160px}.help{font-size:12px;color:var(--muted);margin-top:4px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.status{font-size:13px;color:var(--muted);overflow-wrap:anywhere;margin-top:11px;white-space:pre-wrap}.status .ok{color:var(--good)}.status .err{color:var(--bad)}.status .info{color:var(--info)}.level-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}.level{border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);padding:12px;text-align:left}.level strong{display:block;font-weight:650}.level small{display:block;color:var(--muted);margin-top:3px}.level.active{border-color:var(--accent);background:var(--accentSoft)}.package-list{display:grid;gap:8px;margin-top:12px;max-height:390px;overflow:auto}.package-card{border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:var(--panel);color:var(--text);text-align:left;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%}.package-card.active{border-color:var(--accent);background:var(--accentSoft)}.package-card b{display:block;font-weight:650}.package-card small{display:block;color:var(--muted);margin-top:2px}.pill{display:inline-flex;align-items:center;gap:5px;border-radius:100px;padding:4px 8px;font-size:11px;white-space:nowrap;background:var(--bg);color:var(--muted);border:1px solid var(--line)}.dot{width:7px;height:7px;border-radius:50%;background:#a0a6b0;display:inline-block}.pill.good{color:var(--good)}.pill.good .dot{background:var(--good)}.pill.bad .dot{background:var(--bad)}.empty{color:var(--muted);border:1px dashed var(--line);border-radius:12px;padding:16px;text-align:center;font-size:13px}.filebox{border:1px dashed #9ba2ad;border-radius:12px;padding:14px;background:var(--bg)}.filebox input{width:100%}.foot{font-size:12px;color:var(--muted);margin-top:18px}.hidden{display:none!important}.spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:100%;animation:spin .8s linear infinite;vertical-align:-2px}@keyframes spin{to{transform:rotate(360deg)}}@media(max-width:760px){.layout{grid-template-columns:1fr}.card.full{grid-column:auto}.wrap{padding:13px 10px 30px}.card{padding:14px}.level-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.top{margin-bottom:17px}}@media(prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="brand"><div class="mark">文</div><div><h1>HSK Papers</h1><p>Admin panel · Kelola JSON dan audio</p></div></div><button class="btn" id="themeBtn" type="button">Mode gelap</button></header>
+<section class="hero"><h2>Kelola paket dari satu tempat.</h2><p>Katalog dibaca dari repositori GitHub yang nyata. Unggahan baru dilakukan langsung ke repositori tujuan atau Google Drive.</p></section>
+<div class="notice warn"><strong>Catatan keamanan.</strong> Token GitHub dan kunci Drive hanya digunakan di tab ini, tidak ditanam di kode atau disimpan ke browser. Upload MP3 langsung membutuhkan Apps Script terbaru dan kunci upload yang disetel oleh pemilik Drive.</div>
+<div class="layout">
+<section class="card full">
+<h3>1. Koneksi dan sumber paket</h3><p class="sub">Katalog publik dapat dibaca tanpa token. Untuk menyimpan JSON, hubungkan GitHub dengan fine-grained token yang hanya memiliki izin Contents: Read and write pada repo Beta dan Stable.</p>
+<div class="field"><label for="githubToken">Fine-grained GitHub token</label><input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="Tempel token GitHub di sini"><div class="help">Token tidak disimpan setelah halaman ditutup atau dimuat ulang.</div></div>
+<div class="row"><button class="btn primary" id="connectBtn" type="button">Uji koneksi GitHub</button><span id="connectStatus" class="status" aria-live="polite"></span></div>
+<div class="field"><label for="targetRepo">Tujuan penyimpanan JSON</label><select id="targetRepo"><option value="randirosandi-glitch/Beta-HSK-Papers">Beta · Beta-HSK-Papers</option><option value="randirosandi-glitch/latihanhsk">Stable · latihanhsk</option></select></div>
+<div class="row"><button class="btn" id="refreshBtn" type="button">Muat ulang katalog</button><span id="catalogStatus" class="status" aria-live="polite"><span class="spinner"></span> Memuat katalog GitHub…</span></div>
 </section>
 <section class="card">
-<h3>Audio MP3</h3><p class="sub">Pilih level HSK dan kode paket tujuan, lalu upload MP3 atau masukkan link Google Drive.</p>
-<div class="field"><label>1. Pilih level HSK</label></div><div id="audioLevelFolders" class="folder-levels"></div>
-<div class="field"><label>2. Pilih kode paket</label></div><div id="audioPackageList" class="package-list"><div class="package-empty">Pilih level HSK untuk melihat kode paket.</div></div>
-<div id="audioSelected" class="notice" style="margin:12px 0">Belum ada paket audio dipilih.</div>
-<label class="filepick"><b>Pilih file MP3</b><span>Bisa memilih beberapa file sekaligus</span><input id="mp3Files" type="file" accept="audio/mpeg,.mp3" multiple></label>
-<div class="field"><label for="driveUrl">Atau link file Google Drive</label><input id="driveUrl" type="url" placeholder="https://drive.google.com/file/d/…/view"></div><div id="mp3Result" class="result" aria-live="polite">Pilih paket audio, lalu pilih file atau masukkan link.</div>
-<div class="actions"><button class="btn primary" id="addMp3" type="button">Periksa audio</button><button class="btn" id="uploadMp3" type="button" disabled>Upload / simpan audio</button><button class="btn" id="clearMp3" type="button">Bersihkan</button></div>
-<div class="source-row"><span class="source-pill">Status audio: <strong>Belum terhubung ke database</strong></span></div>
+<h3>2. Upload JSON soal</h3><p class="sub">Validasi JSON, lalu simpan ke folder paket yang sesuai. Nama file mengikuti nilai <code>code</code> di dalam JSON.</p>
+<div class="field"><label for="jsonFolder">Folder tujuan</label><select id="jsonFolder"></select></div>
+<div class="field"><label for="jsonFiles">Pilih satu atau beberapa file JSON</label><div class="filebox"><input id="jsonFiles" type="file" accept=".json,application/json" multiple><div class="help">Batas validasi: 2 MB per file.</div></div></div>
+<div class="actions"><button class="btn" id="validateJsonBtn" type="button">Validasi file</button><button class="btn primary" id="uploadJsonBtn" type="button" disabled>Upload JSON</button><button class="btn" id="clearJsonBtn" type="button">Bersihkan</button></div>
+<div id="jsonStatus" class="status" aria-live="polite">Pilih folder dan file JSON untuk memulai.</div>
 </section>
-
-<p class="foot">Upload belum aktif. Tombol upload baru akan diaktifkan setelah GitHub/Firebase atau storage audio dikonfigurasi dan diuji.</p>
-</div><script>
-const $=id=>document.getElementById(id);let jsonLevel='';let audioLevel='';let audioPackage='';let jsonValid=false;let audioValid=false;
-const fmt=n=>n<1024*1024?(n/1024).toFixed(1)+' KB':(n/1024/1024).toFixed(2)+' MB';
-// Data contoh hanya untuk prototipe. Ganti dengan katalog GitHub/Firebase saat koneksi tersedia.
-const catalog={
- 'HSK 1':['H11001','H11002','H11003'],'HSK 2':['H21001','H21002','H21003'],'HSK 3':['H31001','H31002','H31003'],
- 'HSK 4':['H41001','H41002','H41003','Workbook HSK4a','Workbook HSK4b','HSK4 Susun kata','HSK4 Susun kalimat'],
- 'HSK 5':['H51001','H51002','H51003','H51004','H51005'],'HSK 6':['H61001','H61002','H61003']
-};
-function renderLevelButtons(id,selected,attr){$(id).innerHTML=Object.keys(catalog).map(level=>`<button type="button" class="folder-level ${selected===level?'active':''}" data-${attr}="${esc(level)}"><b>📁 ${esc(level)}</b><small>Pilih folder</small></button>`).join('')}
-function renderAudioPackages(){$('audioPackageList').innerHTML=audioLevel?(catalog[audioLevel]||[]).map(code=>`<button type="button" class="package-card ${audioPackage===code?'active':''}" data-audio-package="${esc(code)}"><b>📄 ${esc(code)}</b><small><span class="status-dot"></span>Status audio: belum terverifikasi</small></button>`).join(''):'<div class="package-empty">Pilih level HSK untuk melihat kode paket.</div>';}
-renderLevelButtons('jsonLevelFolders',jsonLevel,'json-level');renderLevelButtons('audioLevelFolders',audioLevel,'audio-level');renderAudioPackages();
-$('jsonLevelFolders').addEventListener('click',e=>{const b=e.target.closest('[data-json-level]');if(!b)return;jsonLevel=b.dataset.jsonLevel;renderLevelButtons('jsonLevelFolders',jsonLevel,'json-level');$('jsonResult').textContent='Folder tujuan: '+jsonLevel+'. Pilih file JSON untuk diperiksa.';});
-$('audioLevelFolders').addEventListener('click',e=>{const b=e.target.closest('[data-audio-level]');if(!b)return;audioLevel=b.dataset.audioLevel;audioPackage='';renderLevelButtons('audioLevelFolders',audioLevel,'audio-level');renderAudioPackages();$('audioSelected').textContent='Level dipilih: '+audioLevel+'. Pilih kode paket audio.';});
-$('audioPackageList').addEventListener('click',e=>{const b=e.target.closest('[data-audio-package]');if(!b)return;audioPackage=b.dataset.audioPackage;renderAudioPackages();$('audioSelected').innerHTML='<strong>Paket audio: '+esc(audioPackage)+'</strong><br>Status audio belum dapat dipastikan sampai katalog database terhubung.';});
-$('theme').onclick=()=>document.body.classList.toggle('dark');
-$('jsonFile').onchange=()=>{jsonValid=false;$('uploadJson').disabled=true;const f=$('jsonFile').files[0];$('jsonResult').textContent=f?`${f.name} · ${fmt(f.size)}`:'Pilih folder level dan file JSON.'};
-$('mp3Files').onchange=()=>{audioValid=false;$('uploadMp3').disabled=true;const fs=[...$('mp3Files').files];$('mp3Result').textContent=fs.length?fs.map(f=>`${f.name} · ${fmt(f.size)}`).join(' | '):'Pilih paket audio, lalu pilih file atau masukkan link.'};$('driveUrl').oninput=()=>{audioValid=false;$('uploadMp3').disabled=true};
-$('addJson').onclick=async()=>{jsonValid=false;$('uploadJson').disabled=true;const f=$('jsonFile').files[0];if(!jsonLevel){$('jsonResult').innerHTML='<span class="err">Pilih folder level HSK terlebih dahulu.</span>';return}if(!f){$('jsonResult').innerHTML='<span class="err">Pilih file JSON.</span>';return}if(!f.name.toLowerCase().endsWith('.json')){$('jsonResult').innerHTML='<span class="err">File harus berformat .json.</span>';return}try{const data=JSON.parse(await f.text());if(data===null||typeof data!=='object')throw Error('Akar JSON harus berupa objek atau array.');jsonValid=true;$('jsonResult').innerHTML='<span class="ok">JSON valid · tujuan folder '+esc(jsonLevel)+' · '+(Array.isArray(data)?data.length+' item':'objek JSON')+'.</span><br>Belum diunggah. Koneksi GitHub belum dipasang.';}catch(e){$('jsonResult').innerHTML='<span class="err">JSON tidak valid: '+esc(e.message)+'</span>'}};
-$('uploadJson').onclick=()=>{if(jsonValid)$('jsonResult').innerHTML='<span class="err">Upload belum tersedia: koneksi GitHub dan otorisasi admin belum dikonfigurasi.</span>'};
-$('addMp3').onclick=()=>{audioValid=false;$('uploadMp3').disabled=true;const files=[...$('mp3Files').files],url=$('driveUrl').value.trim();if(!audioLevel||!audioPackage){$('mp3Result').innerHTML='<span class="err">Pilih level dan kode paket terlebih dahulu.</span>';return}if(files.length){const bad=files.filter(f=>!f.name.toLowerCase().endsWith('.mp3'));if(bad.length){$('mp3Result').innerHTML='<span class="err">File harus MP3: '+esc(bad.map(f=>f.name).join(', '))+'</span>';return}audioValid=true;$('mp3Result').innerHTML='<span class="ok">'+files.length+' file MP3 valid untuk '+esc(audioPackage)+'.</span><br>Belum diunggah. Koneksi penyimpanan audio belum dipasang.';return}if(url){let id='';try{const u=new URL(url);if(u.hostname==='drive.google.com'){const m=u.pathname.match(/\/file\/d\/([^/]+)/)||u.pathname.match(/\/d\/([^/]+)/);id=m?.[1]||u.searchParams.get('id')||''}}catch{}if(!id){$('mp3Result').innerHTML='<span class="err">Link tidak dikenali. Masukkan link file Google Drive, bukan folder.</span>';return}audioValid=true;$('mp3Result').innerHTML='<span class="ok">Link file dikenali untuk '+esc(audioPackage)+'.</span><br>Belum diverifikasi streaming atau disimpan.';return}$('mp3Result').innerHTML='<span class="err">Pilih file MP3 atau masukkan link Google Drive.</span>'};
-$('uploadMp3').onclick=()=>{if(audioValid)$('mp3Result').innerHTML='<span class="err">Upload belum tersedia: koneksi storage dan pemetaan audio belum dikonfigurasi.</span>'};
-$('clearJson').onclick=()=>{jsonValid=false;$('uploadJson').disabled=true;$('jsonFile').value='';$('jsonResult').textContent='Pilih folder level dan file JSON.'};$('clearMp3').onclick=()=>{audioValid=false;$('uploadMp3').disabled=true;$('mp3Files').value='';$('driveUrl').value='';$('mp3Result').textContent='Pilih paket audio, lalu pilih file atau masukkan link.'};function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-</script></body></html>
+<section class="card">
+<h3>3. Status paket dan audio</h3><p class="sub">Daftar paket digabung dari Beta dan Stable. Versi Beta diprioritaskan jika kode tersedia di kedua repo. Status audio berasal dari indeks Google Drive.</p>
+<div class="level-grid" id="levelGrid"></div>
+<div class="field"><label for="packageSearch">Cari kode paket</label><input id="packageSearch" type="search" placeholder="Contoh: H51001"></div>
+<div class="package-list" id="packageList"><div class="empty">Sedang membaca daftar paket…</div></div>
+<div class="actions"><button class="btn" id="refreshAudioBtn" type="button">Periksa status audio lagi</button></div>
+<div id="audioStatus" class="status" aria-live="polite">Menunggu indeks Google Drive.</div>
+</section>
+<section class="card full">
+<h3>4. Upload atau hubungkan audio MP3</h3><p class="sub">Pilih kode paket dari katalog atau masukkan kode baru. Pilihan satu file menggunakan kode tujuan; bila memilih beberapa file, setiap nama file harus berupa kode paket, misalnya H51001.mp3.</p>
+<div class="layout">
+<div>
+<div class="field"><label for="audioLevel">Level HSK</label><select id="audioLevel"><option value="1">HSK 1</option><option value="2">HSK 2</option><option value="3">HSK 3</option><option value="4">HSK 4</option><option value="5" selected>HSK 5</option><option value="6">HSK 6</option></select></div>
+<div class="field"><label for="audioPackage">Pilih paket audio</label><select id="audioPackage"><option value="">Pilih kode paket…</option></select></div>
+<div class="field"><label for="manualCode">Atau masukkan kode paket</label><input id="manualCode" type="text" autocapitalize="characters" spellcheck="false" placeholder="Misalnya H51006"></div>
+<div class="field"><label for="mp3Files">Pilih file MP3</label><div class="filebox"><input id="mp3Files" type="file" accept=".mp3,audio/mpeg" multiple><div class="help">Batas 12 MB per file untuk upload lewat Apps Script. Untuk file lebih besar, unggah dahulu ke Drive lalu tempel tautannya di bawah.</div></div></div>
+</div>
+<div>
+<div class="field"><label for="driveUrl">Atau tautan file Google Drive</label><input id="driveUrl" type="url" placeholder="https://drive.google.com/file/d/…/view"></div>
+<div class="field"><label for="driveKey">Kunci upload Drive</label><input id="driveKey" type="password" autocomplete="off" spellcheck="false" placeholder="Kunci yang sama dengan ADMIN_UPLOAD_KEY"><div class="help">Diperiksa oleh Apps Script, tidak disimpan pada repositori.</div></div>
+<div class="notice"><strong>Konvensi file.</strong> Audio disimpan sebagai <code>HSK Papers Audio/HSK N/HNxxxx.mp3</code>. File dibuat dapat diakses oleh siapa pun yang memiliki tautan agar aplikasi dapat memutarnya; folder induk tidak dibuat publik.</div>
+</div>
+</div>
+<div class="actions"><button class="btn" id="validateAudioBtn" type="button">Periksa pilihan</button><button class="btn primary" id="uploadAudioBtn" type="button" disabled>Upload / hubungkan audio</button><button class="btn" id="clearAudioBtn" type="button">Bersihkan</button></div>
+<div id="mp3Status" class="status" aria-live="polite">Pilih kode paket dan file MP3 atau tautan Google Drive.</div>
+</section>
+</div>
+<p class="foot">Repo target default adalah Beta. Upload ke Stable hanya terjadi jika tujuan Stable dipilih secara eksplisit. Tidak ada perubahan otomatis lintas repo.</p>
+</div>
+<script>
+(function(){
+'use strict';
+const REPOS=['randirosandi-glitch/Beta-HSK-Papers','randirosandi-glitch/latihanhsk'];
+const DRIVE_INDEX_URL='https://script.google.com/macros/s/AKfycbwzuV2f58gr1J6-oL2lKsOmYmCQWov8MGTJGhPVRcxBECvpjVaW39dGdBtng0t3f3goWQ/exec';
+const $=id=>document.getElementById(id);
+const state={token:'',catalog:new Map(),repoTrees:new Map(),audioFiles:{},audioIndexError:'',activeLevel:5,selectedCode:'',validatedJson:[],jsonValid:false,audioValid:false};
+const levelFolders=Array.from({length:6},(_,i)=>'HSK '+(i+1)).concat(['Workbook HSK4a','Workbook HSK4b']);
+function codeLevel(code){const m=String(code||'').match(/^H([1-6])\d{4}$/i);return m?Number(m[1]):null}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function out(id,html){$(id).innerHTML=html}
+function status(id,message,cls){out(id,'<span'+(cls?' class="'+cls+'"':'')+'>'+esc(message)+'</span>')}
+function apiHeaders(){return {'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(state.token?{'Authorization':'Bearer '+state.token}:{})}}
+async function api(url,opts={}){const r=await fetch(url,{...opts,headers:{...apiHeaders(),...(opts.headers||{})},cache:'no-store'});let body={};const tx=await r.text();try{body=tx?JSON.parse(tx):{}}catch(e){body={message:tx.slice(0,400)}}if(!r.ok)throw new Error('GitHub API '+r.status+': '+(body.message||r.statusText));return body}
+function pathEncode(p){return String(p).split('/').map(encodeURIComponent).join('/')}
+function emptyGroup(name){return {name:name,files:[]}}
+function normalizePath(path){const p=String(path||'').split('/');if(p.length===3&&p[0]==='data'&&levelFolders.includes(p[1]))return {folder:p[1],file:p[2],nested:true};if(p.length===2&&p[0]==='data'){const m=p[1].match(/^(H[1-6]\d{4})\.json$/i);if(m)return {folder:'HSK '+m[1][1],file:p[1],nested:false}}return null}
+async function scanRepo(repo){
+ const info=await api('https://api.github.com/repos/'+repo+'/git/trees/main?recursive=1');
+ if(!Array.isArray(info.tree))throw new Error('Respons pohon repo tidak valid: '+repo);
+ const found=[],codes=new Set();let flat=false,nested=false;
+ for(const item of info.tree){if(item.type!=='blob'||!String(item.path).toLowerCase().endsWith('.json'))continue;const n=normalizePath(item.path);if(!n)continue;const code=n.file.replace(/\.json$/i,'');if(/^(manifest|reading-passages)$/i.test(code))continue;if(!/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(code))continue;const folderLevel=codeLevel(code);if(n.folder.startsWith('HSK ')){if(folderLevel&&folderLevel!==Number(n.folder.slice(4)))continue;if(!folderLevel)continue}else if(!n.folder.startsWith('Workbook '))continue;if(codes.has(n.folder+'|'+code))continue;codes.add(n.folder+'|'+code);found.push({code,folder:n.folder,path:item.path,repo:repo,sha:item.sha||'',size:item.size||0,nested:n.nested});if(n.nested)nested=true;else flat=true;}
+ return {repo,files:found,flatMode:flat&&!nested,nestedMode:nested,treeSha:info.sha||'',truncated:!!info.truncated};
+}
+async function refreshCatalog(){
+ $('refreshBtn').disabled=true;status('catalogStatus','Memuat katalog dari Beta dan Stable…','info');
+ const results=await Promise.allSettled(REPOS.map(scanRepo));
+ const ok=results.filter(x=>x.status==='fulfilled').map(x=>x.value);
+ if(!ok.length){state.catalog.clear();state.repoTrees.clear();renderPackages();status('catalogStatus','Katalog gagal dibaca: '+results.map(x=>x.reason?.message||'error').join(' | '),'err');$('refreshBtn').disabled=false;return}
+ state.catalog.clear();state.repoTrees.clear();ok.forEach(x=>state.repoTrees.set(x.repo,x));
+ // The Beta version wins when the same package code exists in both repositories.
+ ok.sort((a,b)=>REPOS.indexOf(a.repo)-REPOS.indexOf(b.repo));
+ for(const r of ok)for(const f of r.files){const key=f.folder+'|'+f.code;if(!state.catalog.has(key))state.catalog.set(key,f)}
+ const beta=state.repoTrees.has(REPOS[0]),stable=state.repoTrees.has(REPOS[1]);
+ status('catalogStatus','Katalog dimuat: '+state.catalog.size+' paket · '+(beta?'Beta OK':'Beta gagal dibaca')+' · '+(stable?'Stable OK':'Stable gagal dibaca')+'.','ok');
+ renderPackages();renderAudioPackageOptions();$('refreshBtn').disabled=false;
+ await refreshAudioIndex(false);
+}
+function renderLevelButtons(){
+ out('levelGrid',Array.from({length:6},(_,i)=>{const n=i+1;return '<button type="button" class="level '+(state.activeLevel===n?'active':'')+'" data-level="'+n+'"><strong>📁 HSK '+n+'</strong><small>'+[...state.catalog.values()].filter(f=>f.folder==='HSK '+n).length+' paket</small></button>'}).join(''));
+}
+function renderPackages(){
+ renderLevelButtons();
+ const q=$('packageSearch').value.trim().toLowerCase();
+ const files=[...state.catalog.values()].filter(f=>f.folder==='HSK '+state.activeLevel&&(!q||f.code.toLowerCase().includes(q))).sort((a,b)=>a.code.localeCompare(b.code,undefined,{numeric:true}));
+ if(!files.length){out('packageList','<div class="empty">Tidak ada paket JSON untuk HSK '+state.activeLevel+' di repo yang terhubung. Setelah diunggah, paket muncul di sini otomatis.</div>');renderAudioPackageOptions();return}
+ out('packageList',files.map(f=>{const a=state.audioFiles[f.code];const found=!!a;const share=a&&a.sharingAccess;const shareOk=share==='ANYONE_WITH_LINK'||share==='ANYONE';const audioLabel=found?(share&& !shareOk?'Audio ada · izin perlu dicek':'Audio tersedia'):'Audio belum ada';const audioClass=found?(share&& !shareOk?'bad':'good'):'';return '<button type="button" class="package-card '+(state.selectedCode===f.code?'active':'')+'" data-package="'+esc(f.code)+'"><span><b>📄 '+esc(f.code)+'</b><small>'+esc(f.repo===REPOS[0]?'Sumber: Beta':'Sumber: Stable')+' · '+esc(f.path)+'</small></span><span class="pill '+audioClass+'"><i class="dot"></i>'+esc(audioLabel)+'</span></button>'}).join(''));
+ renderAudioPackageOptions();
+}
+function renderAudioPackageOptions(){
+ const sel=$('audioPackage'),level=Number($('audioLevel').value),old=sel.value;
+ const files=[...state.catalog.values()].filter(f=>f.folder==='HSK '+level).sort((a,b)=>a.code.localeCompare(b.code,undefined,{numeric:true}));
+ sel.innerHTML='<option value="">Pilih kode paket…</option>'+files.map(f=>'<option value="'+esc(f.code)+'">'+esc(f.code)+(state.audioFiles[f.code]?' · audio tersedia':'')+'</option>').join('');
+ if(files.some(f=>f.code===old))sel.value=old;else if(files.some(f=>f.code===state.selectedCode))sel.value=state.selectedCode;
+}
+function jsonp(url,timeout=10000){
+ return new Promise((resolve,reject)=>{const name='__hskAudioCallback_'+Date.now()+'_'+Math.floor(Math.random()*1000000);let done=false;const s=document.createElement('script');const clean=()=>{if(done)return;done=true;clearTimeout(t);delete window[name];s.remove()};window[name]=data=>{clean();resolve(data)};s.onerror=()=>{clean();reject(new Error('Indeks audio tidak dapat dibaca.'))};const t=setTimeout(()=>{clean();reject(new Error('Waktu tunggu indeks audio habis.'))},timeout);s.src=url+(url.includes('?')?'&':'?')+'callback='+name+'&_='+Date.now();document.head.appendChild(s)})
+}
+async function refreshAudioIndex(showMessage=true){
+ if(showMessage)status('audioStatus','Memeriksa Google Drive…','info');
+ try{const d=await jsonp(DRIVE_INDEX_URL);if(!d||typeof d!=='object'||!d.files)throw new Error(d?.error||'Format indeks audio tidak dikenal.');state.audioFiles=d.files;state.audioIndexError=d.error||'';renderPackages();if(showMessage)status('audioStatus','Indeks diperbarui · '+Object.keys(d.files).length+' file MP3 terdaftar · '+(d.generatedAt||'waktu tidak tersedia'),'ok');}
+ catch(e){state.audioIndexError=e.message;renderPackages();if(showMessage)status('audioStatus',e.message+' Status audio ditampilkan sebagai belum terverifikasi, bukan dianggap kosong.','err')}
+}
+function fillFolders(){const s=$('jsonFolder');s.innerHTML=levelFolders.map(f=>'<option value="'+esc(f)+'">'+esc(f)+'</option>').join('')}
+function selectPackage(code){state.selectedCode=code;$('audioPackage').value=code;$('manualCode').value='';renderPackages();status('mp3Status','Paket dipilih: '+code+'. Pilih MP3 atau tempel tautan Drive.')}
+function codeForAudio(){const manual=$('manualCode').value.trim().toUpperCase();return manual||$('audioPackage').value||state.selectedCode}
+function validateJsonFile(file,folder,text,data){
+ if(file.size>2*1024*1024)throw new Error(file.name+': file melebihi 2 MB.');
+ if(!file.name.toLowerCase().endsWith('.json'))throw new Error(file.name+': ekstensi bukan .json.');
+ const code=file.name.replace(/\.json$/i,'');if(!/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(code))throw new Error(file.name+': nama file tidak valid.');
+ if(!data||Array.isArray(data)||typeof data!=='object')throw new Error(file.name+': JSON utama harus berupa object.');
+ if(!data.code)throw new Error(file.name+': properti "code" tidak ditemukan.');
+ if(String(data.code).toUpperCase()!==code.toUpperCase())throw new Error(file.name+': code di dalam JSON ('+data.code+') berbeda dengan nama file ('+code+').');
+ if(folder.startsWith('HSK ')){const lv=codeLevel(code);if(!lv)throw new Error(file.name+': kode HSK harus berbentuk H'+folder.slice(4)+'0001, misalnya H51001.');if(lv!==Number(folder.slice(4)))throw new Error(file.name+': kode '+code+' tidak sesuai folder '+folder+'.')}
+ if(!Array.isArray(data.listening)&&!Array.isArray(data.reading)&&!Array.isArray(data.writing)&&!Array.isArray(data.sections)&&!Array.isArray(data.questions)&&!Array.isArray(data.parts)&&!data.workbook&&!data.title)throw new Error(file.name+': struktur soal tidak dikenali (tidak ditemukan bagian listening/reading/writing/sections/questions/parts). Periksa struktur JSON sebelum upload.');
+ return {file,folder,code,text,data};
+}
+async function validateJson(){
+ state.jsonValid=false;state.validatedJson=[];$('uploadJsonBtn').disabled=true;
+ const folder=$('jsonFolder').value,files=[...$('jsonFiles').files];if(!files.length){status('jsonStatus','Pilih setidaknya satu file JSON.','err');return}
+ try{const valid=[];for(const f of files){const text=await f.text();let data;try{data=JSON.parse(text)}catch(e){throw new Error(f.name+': JSON tidak valid — '+e.message)}valid.push(validateJsonFile(f,folder,text,data))}
+ const codes=new Set();for(const f of valid){if(codes.has(f.code))throw new Error('Kode paket duplikat: '+f.code);codes.add(f.code)}
+ state.validatedJson=valid;state.jsonValid=true;$('uploadJsonBtn').disabled=!state.token;status('jsonStatus',valid.length+' file valid: '+valid.map(x=>x.code).join(', ')+'. Tujuan: '+$('targetRepo').value+'.'+(!state.token?' Hubungkan GitHub untuk mengaktifkan upload.':''),'ok');
+ }catch(e){state.validatedJson=[];status('jsonStatus',e.message,'err')}
+}
+function preferredPath(repo,folder,code){
+ const existing=[...state.catalog.values()].find(f=>f.repo===repo&&f.code===code&&f.folder===folder);
+ if(existing)return existing.path;
+ const tree=state.repoTrees.get(repo);
+ if(folder.startsWith('Workbook '))return 'data/'+folder+'/'+code+'.json';
+ if(tree&&tree.flatMode&&!tree.nestedMode)return 'data/'+code+'.json';
+ return 'data/'+folder+'/'+code+'.json';
+}
+function toBase64(text){const bytes=new TextEncoder().encode(text);let binary='';for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode.apply(null,bytes.subarray(i,Math.min(i+0x8000,bytes.length)));return btoa(binary)}
+async function githubWrite(repo,path,content,existingSha){
+ const url='https://api.github.com/repos/'+repo+'/contents/'+pathEncode(path);
+ let sha=existingSha||'';
+ if(!sha){try{const old=await api(url+'?ref=main');sha=old.sha||''}catch(e){if(!String(e.message).includes('API 404'))throw e}}
+ const body={message:'Admin HSK Papers: simpan '+path.split('/').pop(),content:toBase64(content),branch:'main'};if(sha)body.sha=sha;
+ const result=await api(url,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ return result.content?.path||path;
+}
+async function uploadJson(){
+ if(!state.token){status('jsonStatus','Hubungkan GitHub terlebih dahulu.','err');return}
+ if(!state.jsonValid){await validateJson();if(!state.jsonValid)return}
+ const repo=$('targetRepo').value,items=state.validatedJson.slice();$('uploadJsonBtn').disabled=true;
+ let done=[];
+ try{for(let i=0;i<items.length;i++){const item=items[i];status('jsonStatus','Upload '+(i+1)+'/'+items.length+': '+item.code+'…','info');const path=preferredPath(repo,item.folder,item.code);await githubWrite(repo,path,item.text);done.push(item.code)}
+ status('jsonStatus','Berhasil menyimpan '+done.length+' file ke '+repo+': '+done.join(', ')+'. Memperbarui katalog…','ok');await refreshCatalog();state.jsonValid=false;state.validatedJson=[];$('jsonFiles').value='';
+ }catch(e){status('jsonStatus','Berhasil: '+(done.join(', ')||'belum ada')+'. Upload terhenti: '+e.message,'err')}finally{$('uploadJsonBtn').disabled=!state.jsonValid||!state.token}
+}
+function validateAudio(){
+ state.audioValid=false;$('uploadAudioBtn').disabled=true;
+ const level=Number($('audioLevel').value),code=codeForAudio(),files=[...$('mp3Files').files],url=$('driveUrl').value.trim();
+ if(!/^H[1-6]\d{4}$/.test(code)||codeLevel(code)!==level){status('mp3Status','Kode paket wajib sesuai level HSK '+level+', misalnya H'+level+'1001.','err');return}
+ if(files.length&&url){status('mp3Status','Pilih file MP3 atau tautan Drive, bukan keduanya sekaligus.','err');return}
+ if(!files.length&&!url){status('mp3Status','Pilih file MP3 atau tempel tautan file Google Drive.','err');return}
+ if(url&&!extractDriveId(url)){status('mp3Status','Tautan Google Drive tidak dikenali. Gunakan tautan file, bukan tautan folder.','err');return}
+ if(files.length>1){for(const f of files){const stem=f.name.replace(/\.mp3$/i,'').toUpperCase();if(!/\.mp3$/i.test(f.name)||codeLevel(stem)!==level){status('mp3Status','Untuk upload beberapa file, setiap nama harus berupa kode paket level ini, misalnya H51001.mp3. File bermasalah: '+f.name,'err');return}if(f.size>12*1024*1024){status('mp3Status',f.name+' melebihi batas 12 MB. Unggah file besar langsung ke Drive lalu tempel tautannya.','err');return}}}
+ else if(files.length===1){if(!/\.mp3$/i.test(files[0].name)){status('mp3Status','File harus berformat MP3.','err');return}if(files[0].size>12*1024*1024){status('mp3Status','File melebihi batas 12 MB. Unggah file langsung ke Drive lalu tempel tautannya.','err');return}}
+ if(!String($('driveKey').value||'').trim()){status('mp3Status','Masukkan kunci upload Drive. Kunci harus sama dengan Script Property ADMIN_UPLOAD_KEY pada Apps Script.','err');return}
+ state.audioValid=true;$('uploadAudioBtn').disabled=false;status('mp3Status',files.length?files.length+' file MP3 valid untuk HSK '+level+'.'+(files.length===1?' Tujuan: '+code:' Kode diambil dari masing-masing nama file.'):'Tautan Drive valid untuk dihubungkan ke '+code+'.','ok')
+}
+function extractDriveId(url){try{const u=new URL(url);if(!/(^|\.)drive\.google\.com$/i.test(u.hostname))return '';const m=u.pathname.match(/\/file\/d\/([A-Za-z0-9_-]+)/);return (m&&m[1])||u.searchParams.get('id')||''}catch(e){return ''}}
+function bytesToBase64(buffer){const bytes=new Uint8Array(buffer);let binary='';for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode.apply(null,bytes.subarray(i,Math.min(i+0x8000,bytes.length)));return btoa(binary)}
+async function sendDrive(payload){
+ const response=await fetch(DRIVE_INDEX_URL,{method:'POST',mode:'no-cors',redirect:'follow',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(payload)});
+ return response.type==='opaque';
+}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function uploadAudio(){
+ if(!state.audioValid){validateAudio();if(!state.audioValid)return}
+ const key=$('driveKey').value.trim(),level=Number($('audioLevel').value),chosen=codeForAudio(),files=[...$('mp3Files').files],link=$('driveUrl').value.trim();
+ $('uploadAudioBtn').disabled=true;let wanted=[];
+ try{
+  if(link){const id=extractDriveId(link);wanted=[chosen];status('mp3Status','Mengirim perintah untuk menghubungkan file Drive ke '+chosen+'…','info');await sendDrive({action:'attach',key:key,fileId:id,level:level,code:chosen});}
+  else{
+   for(let i=0;i<files.length;i++){const f=files[i],code=files.length===1?chosen:f.name.replace(/\.mp3$/i,'').toUpperCase();wanted.push(code);status('mp3Status','Mengirim '+(i+1)+'/'+files.length+': '+f.name+'…','info');const b64=bytesToBase64(await f.arrayBuffer());await sendDrive({action:'upload',key:key,level:level,code:code,fileName:f.name,mimeType:'audio/mpeg',base64:b64})}
+  }
+  status('mp3Status','Permintaan terkirim. Menunggu Google Drive memperbarui indeks audio…','info');
+  let found=false;for(let attempt=0;attempt<8;attempt++){await sleep(1800);try{const d=await jsonp(DRIVE_INDEX_URL,9000);state.audioFiles=d.files||{};renderPackages();if(wanted.every(c=>state.audioFiles[c])){found=true;break}}catch(e){}}
+  if(found){status('mp3Status','Terverifikasi: audio tersedia di Google Drive untuk '+wanted.join(', ')+'.','ok');$('mp3Files').value='';$('driveUrl').value='';$('driveKey').value='';state.audioValid=false;renderAudioPackageOptions()}
+  else status('mp3Status','Permintaan telah dikirim, tetapi audio belum muncul di indeks setelah menunggu. Periksa: Apps Script sudah diperbarui/dideploy, ADMIN_UPLOAD_KEY cocok, izin Drive, lalu periksa status audio lagi.','err');
+ }catch(e){status('mp3Status','Pengiriman gagal: '+e.message+'. Periksa koneksi, ukuran file, dan deployment Apps Script.','err')}
+ finally{$('uploadAudioBtn').disabled=!state.audioValid}
+}
+$('themeBtn').onclick=()=>{document.body.classList.toggle('dark');$('themeBtn').textContent=document.body.classList.contains('dark')?'Mode terang':'Mode gelap'};
+$('connectBtn').onclick=async()=>{const token=$('githubToken').value.trim();if(!token){state.token='';status('connectStatus','Masukkan fine-grained token terlebih dahulu.','err');return}state.token=token;$('connectBtn').disabled=true;status('connectStatus','Menguji izin Contents…','info');try{for(const repo of REPOS){await api('https://api.github.com/repos/'+repo+'/contents/?ref=main');}status('connectStatus','GitHub terhubung. Beta dan Stable dapat dibaca; izin tulis diuji saat upload.','ok');if(state.jsonValid)$('uploadJsonBtn').disabled=false}else{status('connectStatus','Token tidak memiliki akses baca ke salah satu repo. Pastikan Beta dan latihanhsk dicentang pada fine-grained token.','err');state.token='';} }catch(e){state.token='';status('connectStatus',e.message,'err')}finally{$('connectBtn').disabled=false}};
+$('refreshBtn').onclick=refreshCatalog;$('refreshAudioBtn').onclick=()=>refreshAudioIndex(true);$('levelGrid').addEventListener('click',e=>{const b=e.target.closest('[data-level]');if(!b)return;state.activeLevel=Number(b.dataset.level);renderPackages()});
+$('packageList').addEventListener('click',e=>{const b=e.target.closest('[data-package]');if(!b)return;selectPackage(b.dataset.package)});
+$('packageSearch').addEventListener('input',renderPackages);$('targetRepo').addEventListener('change',()=>{if(state.jsonValid)validateJson()});
+$('jsonFolder').onchange=()=>{state.jsonValid=false;$('uploadJsonBtn').disabled=true};
+$('jsonFiles').onchange=()=>{state.jsonValid=false;$('uploadJsonBtn').disabled=true;status('jsonStatus',$('jsonFiles').files.length+' file dipilih. Tekan Validasi file.')}
+$('validateJsonBtn').onclick=validateJson;$('uploadJsonBtn').onclick=uploadJson;$('clearJsonBtn').onclick=()=>{state.jsonValid=false;state.validatedJson=[];$('jsonFiles').value='';$('uploadJsonBtn').disabled=true;status('jsonStatus','Pilih folder dan file JSON untuk memulai.')};
+$('audioLevel').onchange=()=>{state.selectedCode='';$('manualCode').value='';renderAudioPackageOptions();state.audioValid=false;$('uploadAudioBtn').disabled=true};
+$('audioPackage').onchange=()=>{state.selectedCode=$('audioPackage').value;$('manualCode').value='';state.audioValid=false;$('uploadAudioBtn').disabled=true};
+$('manualCode').oninput=()=>{state.audioValid=false;$('uploadAudioBtn').disabled=true};
+$('mp3Files').onchange=()=>{state.audioValid=false;$('uploadAudioBtn').disabled=true;status('mp3Status',$('mp3Files').files.length+' file dipilih. Tekan Periksa pilihan.')};
+$('driveUrl').oninput=()=>{state.audioValid=false;$('uploadAudioBtn').disabled=true};
+$('driveKey').oninput=()=>{state.audioValid=false;$('uploadAudioBtn').disabled=true};
+$('validateAudioBtn').onclick=validateAudio;$('uploadAudioBtn').onclick=uploadAudio;$('clearAudioBtn').onclick=()=>{state.audioValid=false;$('uploadAudioBtn').disabled=true;$('mp3Files').value='';$('driveUrl').value='';$('driveKey').value='';$('manualCode').value='';$('audioPackage').value='';status('mp3Status','Pilih kode paket dan file MP3 atau tautan Google Drive.')};
+fillFolders();refreshCatalog();
+})();
+</script>
+</body>
+</html>
