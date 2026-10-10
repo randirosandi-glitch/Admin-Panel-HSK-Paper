@@ -15,11 +15,12 @@ button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.
 <div class="wrap">
 <header class="top"><div class="brand"><div class="mark">文</div><div><h1>HSK Papers</h1><p>Admin panel · Kelola JSON dan audio</p></div></div><button class="btn" id="themeBtn" type="button">Mode gelap</button></header>
 <section class="hero"><h2>Kelola paket dari satu tempat.</h2><p>Katalog dibaca dari repositori GitHub yang nyata. Unggahan baru dilakukan langsung ke repositori tujuan atau Google Drive.</p></section>
-<div class="notice warn"><strong>Catatan keamanan.</strong> Token GitHub dan kunci Drive hanya digunakan di tab ini, tidak ditanam di kode atau disimpan ke browser. Upload MP3 langsung membutuhkan Apps Script terbaru dan kunci upload yang disetel oleh pemilik Drive.</div>
+<div class="notice warn"><strong>Catatan keamanan.</strong> Jika opsi “Ingat kunci di perangkat ini” aktif, token GitHub dan kunci Drive disimpan di penyimpanan lokal browser ini agar tidak perlu dimasukkan setiap kali. Keduanya tidak ditulis ke repositori. Aktifkan hanya pada perangkat pribadi yang terkunci. Upload MP3 membutuhkan Apps Script terbaru dan kunci yang cocok.</div>
 <div class="layout">
 <section class="card full">
 <h3>1. Koneksi dan sumber paket</h3><p class="sub">Katalog publik dapat dibaca tanpa token. Untuk menyimpan JSON, hubungkan GitHub dengan fine-grained token yang hanya memiliki izin Contents: Read and write pada repo Beta dan Stable.</p>
-<div class="field"><label for="githubToken">Fine-grained GitHub token</label><input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="Tempel token GitHub di sini"><div class="help">Token tidak disimpan setelah halaman ditutup atau dimuat ulang.</div></div>
+<div class="field"><label for="githubToken">Fine-grained GitHub token</label><input id="githubToken" type="password" autocomplete="off" spellcheck="false" placeholder="Tempel token GitHub di sini"><div class="help">Koneksi dapat dipulihkan otomatis jika opsi ingat kunci diaktifkan.</div></div>
+<div class="field"><label><input id="rememberSecrets" type="checkbox" checked> Ingat kunci di perangkat ini</label><div class="help">Simpan di browser ini agar cukup dimasukkan sekali. Jangan aktifkan pada perangkat umum atau bersama.</div></div>
 <div class="row"><button class="btn primary" id="connectBtn" type="button">Uji koneksi GitHub</button><span id="connectStatus" class="status" aria-live="polite"></span></div>
 <div class="field"><label for="targetRepo">Tujuan penyimpanan JSON</label><select id="targetRepo"><option value="randirosandi-glitch/Beta-HSK-Papers">Beta · Beta-HSK-Papers</option><option value="randirosandi-glitch/latihanhsk">Stable · latihanhsk</option></select></div>
 <div class="row"><button class="btn" id="refreshBtn" type="button">Muat ulang katalog</button><span id="catalogStatus" class="status" aria-live="polite"><span class="spinner"></span> Memuat katalog GitHub…</span></div>
@@ -50,7 +51,7 @@ button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.
 </div>
 <div>
 <div class="field"><label for="driveUrl">Atau tautan file Google Drive</label><input id="driveUrl" type="url" placeholder="https://drive.google.com/file/d/…/view"></div>
-<div class="field"><label for="driveKey">Kunci upload Drive</label><input id="driveKey" type="password" autocomplete="off" spellcheck="false" placeholder="Kunci yang sama dengan ADMIN_UPLOAD_KEY"><div class="help">Diperiksa oleh Apps Script, tidak disimpan pada repositori.</div></div>
+<div class="field"><label for="driveKey">Kunci upload Drive</label><input id="driveKey" type="password" autocomplete="off" spellcheck="false" placeholder="Kunci yang sama dengan ADMIN_UPLOAD_KEY"><div class="help">Diperiksa oleh Apps Script. Jika opsi ingat kunci aktif, kunci disimpan hanya di browser perangkat ini.</div></div>
 <div class="notice"><strong>Konvensi file.</strong> Audio disimpan sebagai <code>HSK Papers Audio/HSK N/HNxxxx.mp3</code>. File dibuat dapat diakses oleh siapa pun yang memiliki tautan agar aplikasi dapat memutarnya; folder induk tidak dibuat publik.</div>
 </div>
 </div>
@@ -67,6 +68,10 @@ const REPOS=['randirosandi-glitch/Beta-HSK-Papers','randirosandi-glitch/latihanh
 const DRIVE_INDEX_URL='https://script.google.com/macros/s/AKfycbwzuV2f58gr1J6-oL2lKsOmYmCQWov8MGTJGhPVRcxBECvpjVaW39dGdBtng0t3f3goWQ/exec';
 const $=id=>document.getElementById(id);
 const state={token:'',catalog:new Map(),repoTrees:new Map(),audioFiles:{},audioIndexError:'',activeLevel:5,selectedCode:'',validatedJson:[],jsonValid:false,audioValid:false};
+const SECRET_STORAGE_KEY='hskpapers_admin_credentials_v1';
+function readSavedCredentials(){try{return JSON.parse(localStorage.getItem(SECRET_STORAGE_KEY)||'{}')}catch(e){return {}}}
+function saveCredentials(){try{if($('rememberSecrets').checked){localStorage.setItem(SECRET_STORAGE_KEY,JSON.stringify({token:$('githubToken').value.trim(),driveKey:$('driveKey').value.trim()}))}else{localStorage.removeItem(SECRET_STORAGE_KEY)}}catch(e){status('connectStatus','Browser tidak mengizinkan penyimpanan kunci. Kunci hanya berlaku selama halaman ini terbuka.','err')}}
+function restoreCredentials(){const saved=readSavedCredentials();if(saved.token){$('githubToken').value=saved.token;state.token=saved.token}if(saved.driveKey)$('driveKey').value=saved.driveKey}
 const levelFolders=Array.from({length:6},(_,i)=>'HSK '+(i+1)).concat(['Workbook HSK4a','Workbook HSK4b']);
 function codeLevel(code){const m=String(code||'').match(/^H([1-6])\d{4}$/i);return m?Number(m[1]):null}
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -209,7 +214,10 @@ async function uploadAudio(){
  finally{$('uploadAudioBtn').disabled=!state.audioValid}
 }
 $('themeBtn').onclick=()=>{document.body.classList.toggle('dark');$('themeBtn').textContent=document.body.classList.contains('dark')?'Mode terang':'Mode gelap'};
-$('connectBtn').onclick=async()=>{const token=$('githubToken').value.trim();if(!token){state.token='';status('connectStatus','Masukkan fine-grained token terlebih dahulu.','err');return}state.token=token;$('connectBtn').disabled=true;status('connectStatus','Menguji izin Contents…','info');try{for(const repo of REPOS){await api('https://api.github.com/repos/'+repo+'/contents/?ref=main');}status('connectStatus','GitHub terhubung. Beta dan Stable dapat dibaca; izin tulis diuji saat upload.','ok');if(state.jsonValid)$('uploadJsonBtn').disabled=false;}catch(e){state.token='';status('connectStatus',e.message+' Pastikan Beta dan latihanhsk dicentang pada fine-grained token.','err')}finally{$('connectBtn').disabled=false}};
+async function connectGitHub(autoRestore=false){const token=$('githubToken').value.trim();if(!token){state.token='';status('connectStatus','Masukkan fine-grained token terlebih dahulu.','err');return}state.token=token;$('connectBtn').disabled=true;status('connectStatus','Menguji izin Contents…','info');try{for(const repo of REPOS){await api('https://api.github.com/repos/'+repo+'/contents/?ref=main');}status('connectStatus',autoRestore?'Koneksi GitHub dipulihkan dari penyimpanan browser.':'GitHub terhubung. Beta dan Stable dapat dibaca; izin tulis diuji saat upload.','ok');if($('rememberSecrets').checked)saveCredentials();if(state.jsonValid)$('uploadJsonBtn').disabled=false;}catch(e){state.token='';status('connectStatus',e.message+' Pastikan token masih berlaku dan Beta serta latihanhsk memiliki izin yang sesuai.','err')}finally{$('connectBtn').disabled=false}}
+$('connectBtn').onclick=()=>connectGitHub(false);
+$('rememberSecrets').onchange=()=>{if($('rememberSecrets').checked){saveCredentials();status('connectStatus','Penyimpanan kunci di perangkat ini diaktifkan.','info')}else{try{localStorage.removeItem(SECRET_STORAGE_KEY)}catch(e){}status('connectStatus','Kunci tersimpan di browser dihapus. Masukkan ulang saat diperlukan.','info')}};
+$('githubToken').addEventListener('input',()=>{if(!$('rememberSecrets').checked)return;saveCredentials()});
 $('refreshBtn').onclick=refreshCatalog;$('refreshAudioBtn').onclick=()=>refreshAudioIndex(true);$('levelGrid').addEventListener('click',e=>{const b=e.target.closest('[data-level]');if(!b)return;state.activeLevel=Number(b.dataset.level);renderPackages()});
 $('packageList').addEventListener('click',e=>{const b=e.target.closest('[data-package]');if(!b)return;selectPackage(b.dataset.package)});
 $('packageSearch').addEventListener('input',renderPackages);$('targetRepo').addEventListener('change',()=>{if(state.jsonValid)validateJson()});
@@ -221,9 +229,9 @@ $('audioPackage').onchange=()=>{state.selectedCode=$('audioPackage').value;$('ma
 $('manualCode').oninput=()=>{state.audioValid=false;$('uploadAudioBtn').disabled=true};
 $('mp3Files').onchange=()=>{state.audioValid=false;$('uploadAudioBtn').disabled=true;status('mp3Status',$('mp3Files').files.length+' file dipilih. Tekan Periksa pilihan.')};
 $('driveUrl').oninput=()=>{state.audioValid=false;$('uploadAudioBtn').disabled=true};
-$('driveKey').oninput=()=>{state.audioValid=false;$('uploadAudioBtn').disabled=true};
+$('driveKey').oninput=()=>{state.audioValid=false;$('uploadAudioBtn').disabled=true;if($('rememberSecrets').checked)saveCredentials()};
 $('validateAudioBtn').onclick=validateAudio;$('uploadAudioBtn').onclick=uploadAudio;$('clearAudioBtn').onclick=()=>{state.audioValid=false;$('uploadAudioBtn').disabled=true;$('mp3Files').value='';$('driveUrl').value='';$('driveKey').value='';$('manualCode').value='';$('audioPackage').value='';status('mp3Status','Pilih kode paket dan file MP3 atau tautan Google Drive.')};
-fillFolders();refreshCatalog();
+restoreCredentials();fillFolders();refreshCatalog();if(state.token)connectGitHub(true);
 })();
 </script>
 </body>
