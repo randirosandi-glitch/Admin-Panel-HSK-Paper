@@ -129,12 +129,12 @@ function codeForAudio(){const manual=$('manualCode').value.trim().toUpperCase();
 function validateJsonFile(file,folder,text,data){
  if(file.size>2*1024*1024)throw new Error(file.name+': file melebihi 2 MB.');
  if(!file.name.toLowerCase().endsWith('.json'))throw new Error(file.name+': ekstensi bukan .json.');
- const code=file.name.replace(/\.json$/i,'');if(!/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(code))throw new Error(file.name+': nama file tidak valid.');
+ const rawCode=file.name.replace(/\.json$/i,'');const code=folder.startsWith('HSK ')?rawCode.toUpperCase():rawCode;if(!/^[A-Za-z0-9][A-Za-z0-9_-]{1,39}$/.test(code))throw new Error(file.name+': nama file tidak valid.');
  if(!data||Array.isArray(data)||typeof data!=='object')throw new Error(file.name+': JSON utama harus berupa object.');
  if(!data.code)throw new Error(file.name+': properti "code" tidak ditemukan.');
  if(String(data.code).toUpperCase()!==code.toUpperCase())throw new Error(file.name+': code di dalam JSON ('+data.code+') berbeda dengan nama file ('+code+').');
  if(folder.startsWith('HSK ')){const lv=codeLevel(code);if(!lv)throw new Error(file.name+': kode HSK harus berbentuk H'+folder.slice(4)+'0001, misalnya H51001.');if(lv!==Number(folder.slice(4)))throw new Error(file.name+': kode '+code+' tidak sesuai folder '+folder+'.')}
- if(!Array.isArray(data.listening)&&!Array.isArray(data.reading)&&!Array.isArray(data.writing)&&!Array.isArray(data.sections)&&!Array.isArray(data.questions)&&!Array.isArray(data.parts)&&!data.workbook&&!data.title)throw new Error(file.name+': struktur soal tidak dikenali (tidak ditemukan bagian listening/reading/writing/sections/questions/parts). Periksa struktur JSON sebelum upload.');
+ if(Object.keys(data).every(k=>k==='code'))throw new Error(file.name+': JSON hanya berisi kode paket tanpa data soal.');
  return {file,folder,code,text,data};
 }
 async function validateJson(){
@@ -146,7 +146,7 @@ async function validateJson(){
  }catch(e){state.validatedJson=[];status('jsonStatus',e.message,'err')}
 }
 function preferredPath(repo,folder,code){
- const existing=[...state.catalog.values()].find(f=>f.repo===repo&&f.code===code&&f.folder===folder);
+ const repoCatalog=state.repoTrees.get(repo);const existing=repoCatalog&&repoCatalog.files.find(f=>f.code===code&&f.folder===folder);
  if(existing)return existing.path;
  const tree=state.repoTrees.get(repo);
  if(folder.startsWith('Workbook '))return 'data/'+folder+'/'+code+'.json';
